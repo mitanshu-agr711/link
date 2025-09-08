@@ -1,0 +1,306 @@
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Search, Filter, Plus, Calendar, MoreHorizontal, Play, Pause, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
+
+// Mock data for campaigns (expanded to 10 campaigns)
+const mockCampaigns = [
+  {
+    id: "1",
+    name: "Q4 Enterprise Outreach",
+    status: "active",
+    totalLeads: 145,
+    successfulLeads: 23,
+    responseRate: 15.8,
+    createdDate: "2024-01-01",
+    description: "Targeting enterprise clients for Q4 sales push"
+  },
+  {
+    id: "2",
+    name: "Holiday Season Campaign",
+    status: "paused",
+    totalLeads: 89,
+    successfulLeads: 12,
+    responseRate: 13.5,
+    createdDate: "2023-12-15",
+    description: "Holiday-themed outreach campaign"
+  },
+  {
+    id: "3",
+    name: "New Year 2024 Push",
+    status: "completed",
+    totalLeads: 200,
+    successfulLeads: 45,
+    responseRate: 22.5,
+    createdDate: "2023-12-28",
+    description: "New Year business development campaign"
+  },
+  {
+    id: "4",
+    name: "Industry Conference Follow-up",
+    status: "draft",
+    totalLeads: 67,
+    successfulLeads: 0,
+    responseRate: 0,
+    createdDate: "2024-01-10",
+    description: "Following up with conference attendees"
+  },
+  {
+    id: "5",
+    name: "Spring Product Launch",
+    status: "active",
+    totalLeads: 178,
+    successfulLeads: 31,
+    responseRate: 17.4,
+    createdDate: "2024-02-01",
+    description: "Promoting new product features to prospects"
+  },
+  {
+    id: "6",
+    name: "LinkedIn Outreach Series",
+    status: "active",
+    totalLeads: 234,
+    successfulLeads: 42,
+    responseRate: 18.9,
+    createdDate: "2024-01-15",
+    description: "Targeted LinkedIn messaging campaign"
+  },
+  {
+    id: "7",
+    name: "Email Marketing Blast",
+    status: "completed",
+    totalLeads: 156,
+    successfulLeads: 28,
+    responseRate: 17.9,
+    createdDate: "2023-11-20",
+    description: "Monthly newsletter and product updates"
+  },
+  {
+    id: "8",
+    name: "Webinar Follow-up",
+    status: "paused",
+    totalLeads: 98,
+    successfulLeads: 15,
+    responseRate: 15.3,
+    createdDate: "2024-01-05",
+    description: "Following up with webinar attendees"
+  },
+  {
+    id: "9",
+    name: "Cold Email Outreach",
+    status: "active",
+    totalLeads: 312,
+    successfulLeads: 48,
+    responseRate: 15.4,
+    createdDate: "2024-02-10",
+    description: "Cold outreach to potential customers"
+  },
+  {
+    id: "10",
+    name: "Partner Referral Campaign",
+    status: "draft",
+    totalLeads: 45,
+    successfulLeads: 0,
+    responseRate: 0,
+    createdDate: "2024-02-15",
+    description: "Campaign targeting partner referrals"
+  }
+];
+
+const getStatusVariant = (status: string) => {
+  switch (status) {
+    case "active": return "success";
+    case "paused": return "warning"; 
+    case "completed": return "default";
+    case "draft": return "secondary";
+    default: return "secondary";
+  }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case "active": return <Play className="w-3 h-3" />;
+    case "paused": return <Pause className="w-3 h-3" />;
+    case "completed": return <BarChart3 className="w-3 h-3" />;
+    default: return null;
+  }
+};
+
+export function CampaignsTable() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const filteredCampaigns = mockCampaigns.filter(campaign =>
+    campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    campaign.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentCampaigns = filteredCampaigns.slice(startIndex, endIndex);
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>All Campaigns</CardTitle>
+        <CardDescription>
+          Manage your outreach campaigns and track performance
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search campaigns..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset to first page when searching
+                }}
+                className="pl-10 w-80"
+              />
+            </div>
+            <Button variant="outline" size="sm">
+              <Filter className="w-4 h-4 mr-2" />
+              Filters
+            </Button>
+          </div>
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            New Campaign
+          </Button>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Campaign Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Total Leads</TableHead>
+                <TableHead>Successful</TableHead>
+                <TableHead>Response Rate</TableHead>
+                <TableHead>Progress</TableHead>
+                <TableHead>Created Date</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentCampaigns.map((campaign) => (
+                <TableRow 
+                  key={campaign.id} 
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                >
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{campaign.name}</div>
+                      <div className="text-sm text-muted-foreground">{campaign.description}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusVariant(campaign.status) as any} className="flex items-center space-x-1 w-fit">
+                      {getStatusIcon(campaign.status)}
+                      <span>{campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}</span>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">{campaign.totalLeads}</TableCell>
+                  <TableCell className="text-center">{campaign.successfulLeads}</TableCell>
+                  <TableCell className="text-center">{campaign.responseRate}%</TableCell>
+                  <TableCell>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`bg-blue-600 h-2 rounded-full transition-all duration-300`}
+                        style={{ width: `${Math.min(campaign.responseRate, 100)}%` }}
+                      ></div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm">{campaign.createdDate}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between mt-6">
+          <div className="text-sm text-muted-foreground">
+            Showing {startIndex + 1} to {Math.min(endIndex, filteredCampaigns.length)} of {filteredCampaigns.length} campaigns
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
+            </Button>
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(page)}
+                  className="w-8"
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        </div>
+
+        {filteredCampaigns.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">No campaigns found.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
