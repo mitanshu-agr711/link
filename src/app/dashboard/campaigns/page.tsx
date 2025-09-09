@@ -13,7 +13,6 @@ export default function CampaignsPage() {
             Create and manage your outreach campaigns
           </p>
         </div>
-       
       </div>
       
       <CampaignsStats />

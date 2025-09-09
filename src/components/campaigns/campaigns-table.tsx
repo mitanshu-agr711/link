@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Search, Filter, Plus, Calendar, MoreHorizontal, Play, Pause, BarChart3, ChevronLeft, ChevronRight, Edit, Trash2, ChevronDown } from "lucide-react";
 
-// Mock data for campaigns (expanded to 10 campaigns)
+
 const mockCampaigns = [
   {
     id: "1",
@@ -139,6 +140,7 @@ const getStatusIcon = (status: string) => {
 };
 
 export function CampaignsTable() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -147,7 +149,7 @@ export function CampaignsTable() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 6;
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -257,6 +259,10 @@ export function CampaignsTable() {
       
       setCampaigns(prev => [...prev, newCampaign]);
     }
+  };
+
+  const handleCampaignClick = (campaign: any) => {
+    router.push(`/dashboard/campaigns/${campaign.id}`);
   };
 
   return (
@@ -382,6 +388,7 @@ export function CampaignsTable() {
                 <TableRow 
                   key={campaign.id} 
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => handleCampaignClick(campaign)}
                 >
                   <TableCell>
                     <div>
