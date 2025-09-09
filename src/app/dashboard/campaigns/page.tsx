@@ -13,10 +13,7 @@ export default function CampaignsPage() {
             Create and manage your outreach campaigns
           </p>
         </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          New Campaign
-        </Button>
+       
       </div>
       
       <CampaignsStats />

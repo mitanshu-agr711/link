@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Search, Filter, Plus, Calendar, MoreHorizontal, Play, Pause, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Plus, Calendar, MoreHorizontal, Play, Pause, BarChart3, ChevronLeft, ChevronRight, Edit, Trash2, ChevronDown } from "lucide-react";
 
 // Mock data for campaigns (expanded to 10 campaigns)
 const mockCampaigns = [
@@ -141,12 +141,32 @@ const getStatusIcon = (status: string) => {
 export function CampaignsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [campaigns, setCampaigns] = useState(mockCampaigns);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 6;
 
-  const filteredCampaigns = mockCampaigns.filter(campaign =>
-    campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    campaign.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredCampaigns = campaigns.filter(campaign => {
+    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      campaign.description.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || campaign.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -159,6 +179,84 @@ export function CampaignsTable() {
 
   const handleNextPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  // Action handlers
+  const handleEdit = (campaign: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // For now, we'll simulate editing by updating the campaign name
+    const newName = prompt(`Edit campaign name:`, campaign.name);
+    if (newName && newName.trim() !== '') {
+      setCampaigns(prev => prev.map(c => 
+        c.id === campaign.id 
+          ? { ...c, name: newName.trim() }
+          : c
+      ));
+    }
+  };
+
+  const handleToggleStatus = (campaign: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    let newStatus: string;
+    
+    if (campaign.status === 'active') {
+      newStatus = 'paused';
+    } else if (campaign.status === 'paused') {
+      newStatus = 'active';
+    } else if (campaign.status === 'draft') {
+      newStatus = 'active';
+    } else if (campaign.status === 'completed') {
+      // Can't change completed status
+      alert('Completed campaigns cannot be modified');
+      return;
+    } else {
+      newStatus = 'active';
+    }
+
+    setCampaigns(prev => prev.map(c => 
+      c.id === campaign.id 
+        ? { ...c, status: newStatus }
+        : c
+    ));
+  };
+
+  const handleDelete = (campaign: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete "${campaign.name}"? This action cannot be undone.`)) {
+      setCampaigns(prev => prev.filter(c => c.id !== campaign.id));
+      
+      // Reset to first page if current page becomes empty
+      const remainingCampaigns = campaigns.filter(c => c.id !== campaign.id);
+      const filteredRemaining = remainingCampaigns.filter(campaign => {
+        const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          campaign.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesStatus = statusFilter === "all" || campaign.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+      
+      const newTotalPages = Math.ceil(filteredRemaining.length / itemsPerPage);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      }
+    }
+  };
+
+  const handleAddCampaign = () => {
+    const campaignName = prompt('Enter campaign name:');
+    if (campaignName && campaignName.trim() !== '') {
+      const newCampaign = {
+        id: (campaigns.length + 1).toString(),
+        name: campaignName.trim(),
+        status: "draft",
+        totalLeads: 0,
+        successfulLeads: 0,
+        responseRate: 0,
+        createdDate: new Date().toISOString().split('T')[0],
+        description: "New campaign created"
+      };
+      
+      setCampaigns(prev => [...prev, newCampaign]);
+    }
   };
 
   return (
@@ -184,14 +282,84 @@ export function CampaignsTable() {
                 className="pl-10 w-80"
               />
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
+            <div className="relative" ref={dropdownRef}>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                className="flex items-center space-x-2"
+              >
+                <Filter className="w-4 h-4" />
+                <span>
+                  {statusFilter === "all" ? "All Status" : 
+                   statusFilter === "active" ? "Active" :
+                   statusFilter === "paused" ? "Inactive" :
+                   statusFilter === "completed" ? "Completed" :
+                   "Draft"}
+                </span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+              
+              {showFilterDropdown && (
+                <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setStatusFilter("all");
+                        setShowFilterDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                        statusFilter === "all" ? "bg-blue-50 text-blue-600" : ""
+                      }`}
+                    >
+                      🔍 All Status ({campaigns.length})
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStatusFilter("active");
+                        setShowFilterDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                        statusFilter === "active" ? "bg-green-50 text-green-600" : ""
+                      }`}
+                    >
+                      ▶️ Active ({campaigns.filter(c => c.status === "active").length})
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStatusFilter("paused");
+                        setShowFilterDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                        statusFilter === "paused" ? "bg-yellow-50 text-yellow-600" : ""
+                      }`}
+                    >
+                      ⏸️ Inactive ({campaigns.filter(c => c.status === "paused").length})
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStatusFilter("completed");
+                        setShowFilterDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                        statusFilter === "completed" ? "bg-blue-50 text-blue-600" : ""
+                      }`}
+                    >
+                      ✅ Completed ({campaigns.filter(c => c.status === "completed").length})
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+           
           </div>
-          <Button>
+          <Button onClick={handleAddCampaign}>
             <Plus className="w-4 h-4 mr-2" />
-            New Campaign
+            Add Campaign
           </Button>
         </div>
 
@@ -206,7 +374,7 @@ export function CampaignsTable() {
                 <TableHead>Response Rate</TableHead>
                 <TableHead>Progress</TableHead>
                 <TableHead>Created Date</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead className="w-[120px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -233,7 +401,7 @@ export function CampaignsTable() {
                   <TableCell>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className={`bg-blue-600 h-2 rounded-full transition-all duration-300`}
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${Math.min(campaign.responseRate, 100)}%` }}
                       ></div>
                     </div>
@@ -245,9 +413,41 @@ export function CampaignsTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={(e) => handleEdit(campaign, e)}
+                        className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                        title="Edit Campaign"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleToggleStatus(campaign, e)}
+                        className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                        title={
+                          campaign.status === 'paused' ? 'Resume Campaign' : 
+                          campaign.status === 'active' ? 'Pause Campaign' :
+                          campaign.status === 'draft' ? 'Activate Campaign' :
+                          'Cannot modify completed campaign'
+                        }
+                        disabled={campaign.status === 'completed'}
+                      >
+                        {campaign.status === 'paused' ? (
+                          <Play className="h-4 w-4" />
+                        ) : campaign.status === 'completed' ? (
+                          <BarChart3 className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <Pause className="h-4 w-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={(e) => handleDelete(campaign, e)}
+                        className="p-1.5 hover:bg-destructive/10 text-destructive rounded-md transition-colors"
+                        title="Delete Campaign"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
