@@ -215,6 +215,12 @@ export function LeadsTable() {
     // Add delete functionality
   };
 
+  const handleToggleStatus = (lead: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Toggle status for lead:', lead.id);
+    // Add toggle status functionality
+  };
+
   return (
     <>
       <Card>
@@ -250,15 +256,9 @@ export function LeadsTable() {
                 <option value="converted">Converted</option>
               </select>
               
-              <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                More Filters
-              </Button>
+              
             </div>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Lead
-            </Button>
+            
           </div>
 
           <div className="rounded-md border">
@@ -319,7 +319,7 @@ export function LeadsTable() {
                       {getSortIcon('lastContact')}
                     </div>
                   </TableHead>
-                  <TableHead className="w-[120px]">Actions</TableHead>
+          
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -354,44 +354,6 @@ export function LeadsTable() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-4 h-4 text-gray-400" />
                         <span className="text-sm">{lead.lastContact}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEdit(lead, e);
-                          }}
-                          className="p-1.5 hover:bg-muted rounded-md transition-colors"
-                          title="Edit Lead"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleStatus(lead, e);
-                          }}
-                          className="p-1.5 hover:bg-muted rounded-md transition-colors"
-                          title={lead.status === 'paused' ? 'Resume Lead' : 'Pause Lead'}
-                        >
-                          {lead.status === 'paused' ? (
-                            <Play className="h-4 w-4" />
-                          ) : (
-                            <Pause className="h-4 w-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(lead, e);
-                          }}
-                          className="p-1.5 hover:bg-destructive/10 text-destructive rounded-md transition-colors"
-                          title="Delete Lead"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
                       </div>
                     </TableCell>
                   </TableRow>
