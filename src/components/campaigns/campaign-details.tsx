@@ -44,46 +44,136 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-green-600">{campaign.successfulLeads}</div>
-            <div className="text-sm text-muted-foreground">Successful</div>
+            <div className="text-2xl font-bold text-blue-600">{Math.round(campaign.totalLeads * 0.85)}</div>
+            <div className="text-sm text-muted-foreground">Request Sent</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-purple-600">{campaign.responseRate}%</div>
-            <div className="text-sm text-muted-foreground">Response Rate</div>
+            <div className="text-2xl font-bold text-blue-600">{campaign.responseRate}%</div>
+            <div className="text-sm text-muted-foreground">Request Accept</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-bold text-blue-600">
               {Math.round((campaign.successfulLeads / campaign.totalLeads) * 100) || 0}%
             </div>
-            <div className="text-sm text-muted-foreground">Conversion Rate</div>
+            <div className="text-sm text-muted-foreground">Request Replied</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Campaign Progress */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Campaign Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between text-sm">
-              <span>Overall Progress</span>
-              <span>{campaign.responseRate}%</span>
+      {/* Two Horizontal Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Campaign Progress Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Campaign Progress</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Campaign Progress</span>
+                <span className="text-sm text-muted-foreground">{campaign.responseRate}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(campaign.responseRate, 100)}%` }}
+                ></div>
+              </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(campaign.responseRate, 100)}%` }}
-              ></div>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Lead Connected</span>
+                <span className="text-sm text-muted-foreground">{Math.round(campaign.totalLeads * 0.65)}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(65, 100)}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Acceptance Rate</span>
+                <span className="text-sm text-muted-foreground">{campaign.responseRate}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(campaign.responseRate, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Reply Rate</span>
+                <span className="text-sm text-muted-foreground">{Math.round((campaign.successfulLeads / campaign.totalLeads) * 100)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min((campaign.successfulLeads / campaign.totalLeads) * 100, 100)}%` }}
+                ></div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Campaign Details Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Campaign Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm font-medium">Start Date</span>
+              <span className="text-sm text-muted-foreground">{campaign.createdDate}</span>
+            </div>
+            
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm font-medium">Status</span>
+              <Badge variant={getStatusVariant(campaign.status) as any} className="text-xs">
+                {campaign.status === 'active' && <Play className="w-3 h-3 mr-1" />}
+                {campaign.status === 'paused' && <Pause className="w-3 h-3 mr-1" />}
+                {campaign.status === 'completed' && <BarChart3 className="w-3 h-3 mr-1" />}
+                {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+              </Badge>
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm font-medium">Conversion Ratio</span>
+              <span className="text-sm text-muted-foreground">
+                {campaign.successfulLeads}:{campaign.totalLeads} 
+                <span className="ml-2 text-blue-600">
+                  ({Math.round((campaign.successfulLeads / campaign.totalLeads) * 100)}%)
+                </span>
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm font-medium">Total Contacts</span>
+              <span className="text-sm text-muted-foreground">{campaign.totalLeads}</span>
+            </div>
+
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm font-medium">Successful Conversions</span>
+              <span className="text-sm text-blue-600 font-medium">{campaign.successfulLeads}</span>
+            </div>
+
+            <div className="flex justify-between items-center py-2">
+              <span className="text-sm font-medium">Campaign Type</span>
+              <span className="text-sm text-muted-foreground">Outreach Campaign</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Recent Activity */}
       <Card>
@@ -119,19 +209,156 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
     </div>
   );
 
-  const renderLeads = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Campaign Leads</CardTitle>
-        <CardDescription>All leads associated with this campaign</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Leads management interface coming soon...</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+  const renderLeads = () => {
+    // Mock leads data for the campaign
+    const leads = [
+      {
+        id: 1,
+        name: "John Smith",
+        email: "john.smith@example.com",
+        company: "Tech Corp",
+        status: "responded",
+        responseDate: "2024-01-15",
+        connectionStatus: "connected"
+      },
+      {
+        id: 2,
+        name: "Sarah Johnson",
+        email: "sarah.j@business.com",
+        company: "Business Inc",
+        status: "pending",
+        responseDate: null,
+        connectionStatus: "pending"
+      },
+      {
+        id: 3,
+        name: "Mike Wilson",
+        email: "mike.wilson@startup.io",
+        company: "Startup Solutions",
+        status: "accepted",
+        responseDate: "2024-01-14",
+        connectionStatus: "connected"
+      },
+      {
+        id: 4,
+        name: "Emily Davis",
+        email: "emily.davis@enterprise.com",
+        company: "Enterprise LLC",
+        status: "declined",
+        responseDate: "2024-01-13",
+        connectionStatus: "declined"
+      },
+      {
+        id: 5,
+        name: "Alex Chen",
+        email: "alex.chen@innovation.co",
+        company: "Innovation Co",
+        status: "responded",
+        responseDate: "2024-01-16",
+        connectionStatus: "connected"
+      }
+    ];
+
+    const getStatusBadge = (status: string) => {
+      switch (status) {
+        case "responded":
+          return <Badge variant="default" className="bg-blue-100 text-blue-700">Responded</Badge>;
+        case "accepted":
+          return <Badge variant="default" className="bg-green-100 text-green-700">Accepted</Badge>;
+        case "pending":
+          return <Badge variant="secondary">Pending</Badge>;
+        case "declined":
+          return <Badge variant="destructive">Declined</Badge>;
+        default:
+          return <Badge variant="secondary">{status}</Badge>;
+      }
+    };
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Campaign Leads</CardTitle>
+          <CardDescription>All leads associated with this campaign ({leads.length} total)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {/* Leads Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{leads.length}</div>
+                <div className="text-sm text-muted-foreground">Total Leads</div>
+              </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  {leads.filter(lead => lead.status === 'responded' || lead.status === 'accepted').length}
+                </div>
+                <div className="text-sm text-muted-foreground">Responded</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  {leads.filter(lead => lead.status === 'pending').length}
+                </div>
+                <div className="text-sm text-muted-foreground">Pending</div>
+              </div>
+              <div className="text-center p-4 bg-red-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  {leads.filter(lead => lead.status === 'declined').length}
+                </div>
+                <div className="text-sm text-muted-foreground">Declined</div>
+              </div>
+            </div>
+
+            {/* Leads Table */}
+            <div className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-3 border-b">
+                <h3 className="font-medium">Leads List</h3>
+              </div>
+              <div className="divide-y">
+                {leads.map((lead) => (
+                  <div key={lead.id} className="p-6 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-blue-600 font-medium text-sm">
+                              {lead.name.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{lead.name}</h4>
+                            <p className="text-sm text-muted-foreground">{lead.email}</p>
+                            <p className="text-sm text-muted-foreground">{lead.company}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <div className="text-sm font-medium">Status</div>
+                          {getStatusBadge(lead.status)}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium">Response Date</div>
+                          <div className="text-sm text-muted-foreground">
+                            {lead.responseDate || 'No response'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium">Connection</div>
+                          <div className="text-sm text-muted-foreground capitalize">
+                            {lead.connectionStatus}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const renderSequence = () => (
     <Card>
@@ -223,10 +450,6 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
             {campaign.status === 'completed' && <BarChart3 className="w-3 h-3 mr-1" />}
             {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
           </Badge>
-          <Button variant="outline" size="sm">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit Campaign
-          </Button>
         </div>
       </div>
 
