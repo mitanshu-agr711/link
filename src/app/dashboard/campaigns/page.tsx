@@ -3,6 +3,9 @@ import { CampaignsStats } from "@/components/campaigns/campaigns-stats";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
+// Force dynamic rendering since this page may access session data
+export const dynamic = 'force-dynamic';
+
 export default function CampaignsPage() {
   return (
     <div className="space-y-6">

@@ -1,5 +1,7 @@
 import { CampaignDetails } from "@/components/campaigns/campaign-details";
 
+// Force dynamic rendering since this page may access session data
+export const dynamic = 'force-dynamic';
 
 const getCampaignById = (id: string) => {
   const mockCampaigns = [
@@ -11,7 +13,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 23,
       responseRate: 15.8,
       createdDate: "2024-01-01",
-      description: "Targeting enterprise clients for Q4 sales push"
+      description: "Targeting enterprise clients for Q4 sales push",
     },
     {
       id: "2",
@@ -21,7 +23,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 12,
       responseRate: 13.5,
       createdDate: "2023-12-15",
-      description: "Holiday-themed outreach campaign"
+      description: "Holiday-themed outreach campaign",
     },
     {
       id: "3",
@@ -31,7 +33,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 45,
       responseRate: 22.5,
       createdDate: "2023-12-28",
-      description: "New Year business development campaign"
+      description: "New Year business development campaign",
     },
     {
       id: "4",
@@ -41,7 +43,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 0,
       responseRate: 0,
       createdDate: "2024-01-10",
-      description: "Following up with conference attendees"
+      description: "Following up with conference attendees",
     },
     {
       id: "5",
@@ -51,7 +53,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 31,
       responseRate: 17.4,
       createdDate: "2024-02-01",
-      description: "Promoting new product features to prospects"
+      description: "Promoting new product features to prospects",
     },
     {
       id: "6",
@@ -61,7 +63,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 42,
       responseRate: 18.9,
       createdDate: "2024-01-15",
-      description: "Targeted LinkedIn messaging campaign"
+      description: "Targeted LinkedIn messaging campaign",
     },
     {
       id: "7",
@@ -71,7 +73,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 28,
       responseRate: 17.9,
       createdDate: "2023-11-20",
-      description: "Monthly newsletter and product updates"
+      description: "Monthly newsletter and product updates",
     },
     {
       id: "8",
@@ -81,7 +83,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 15,
       responseRate: 15.3,
       createdDate: "2024-01-05",
-      description: "Following up with webinar attendees"
+      description: "Following up with webinar attendees",
     },
     {
       id: "9",
@@ -91,7 +93,7 @@ const getCampaignById = (id: string) => {
       successfulLeads: 48,
       responseRate: 15.4,
       createdDate: "2024-02-10",
-      description: "Cold outreach to potential customers"
+      description: "Cold outreach to potential customers",
     },
     {
       id: "10",
@@ -101,32 +103,40 @@ const getCampaignById = (id: string) => {
       successfulLeads: 0,
       responseRate: 0,
       createdDate: "2024-02-15",
-      description: "Campaign targeting partner referrals"
-    }
+      description: "Campaign targeting partner referrals",
+    },
   ];
 
-  return mockCampaigns.find(campaign => campaign.id === id);
+  return mockCampaigns.find((campaign) => campaign.id === id);
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function CampaignDetailsPage({ params }: PageProps) {
-  const campaign = getCampaignById(params.id);
+export default async function CampaignDetailsPage({ params }: PageProps) {
+  const { id } = await params;
+  const campaign = getCampaignById(id);
 
   if (!campaign) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Campaign Not Found</h1>
-          <p className="text-muted-foreground">The campaign you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground">
+            The campaign you're looking for doesn't exist.
+          </p>
         </div>
       </div>
     );
   }
 
   return <CampaignDetails campaign={campaign} />;
+}
+
+export async function generateStaticParams() {
+  const ids = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+  return ids.map((id) => ({ id }));
 }

@@ -17,8 +17,34 @@ import {
 } from "@/components/ui/table";
 import { Search, Filter, Plus, Mail, Phone, Calendar, MoreHorizontal, X, User, Building, MessageSquare, Clock, Edit, Pause, Play, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
+type Lead = {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  campaign: string;
+  status: string;
+  lastContact: string;
+  position: string;
+  phone: string;
+  notes: string;
+  interactions: {
+    id: string;
+    type: string;
+    date: string;
+    description: string;
+  }[];
+};
 
-const generateMockLeads = (count: number) => {
+type SortableKeys = keyof Omit<Lead, 'interactions'>;
+
+type SortConfig = {
+  key: SortableKeys;
+  direction: 'asc' | 'desc';
+} | null;
+
+
+const generateMockLeads = (count: number): Lead[] => {
   const companies = ["TechCorp Inc.", "Innovate Co.", "Startup.io", "BigCorp", "NextGen Solutions", "Digital Dynamics", "Cloud Systems", "Data Insights", "AI Ventures", "Growth Labs"];
   const campaigns = ["Q4 Outreach", "Holiday Campaign", "New Year Push", "Spring Launch", "Summer Drive", "Enterprise Focus", "SMB Outreach", "Product Demo", "LinkedIn Campaign", "Email Series"];
   const statuses = ["pending", "contacted", "responded", "converted"];
@@ -67,12 +93,12 @@ const getStatusVariant = (status: string) => {
 export function LeadsTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
-  const [displayedLeads, setDisplayedLeads] = useState<any[]>([]);
+  const [displayedLeads, setDisplayedLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc' | 'desc'} | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
   
   const observerRef = useRef<HTMLDivElement>(null);
   const ITEMS_PER_PAGE = 50;
@@ -96,6 +122,13 @@ export function LeadsTable() {
     const aValue = a[key];
     const bValue = b[key];
     
+    // Handle string comparison
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      const result = aValue.localeCompare(bValue);
+      return direction === 'asc' ? result : -result;
+    }
+    
+    // Handle other types (fallback)
     if (aValue < bValue) return direction === 'asc' ? -1 : 1;
     if (aValue > bValue) return direction === 'asc' ? 1 : -1;
     return 0;
@@ -118,7 +151,7 @@ export function LeadsTable() {
     }, 500);
   }, [loading, hasMore, displayedLeads.length, sortedLeads]);
 
-s
+
   useEffect(() => {
     setDisplayedLeads([]);
     setHasMore(true);
@@ -171,7 +204,7 @@ s
   }, []);
 
   
-  const handleSort = (key: string) => {
+  const handleSort = (key: SortableKeys) => {
     setSortConfig(prevConfig => {
       if (prevConfig?.key === key) {
         return { key, direction: prevConfig.direction === 'asc' ? 'desc' : 'asc' };
@@ -181,7 +214,7 @@ s
   };
 
   
-  const getSortIcon = (columnKey: string) => {
+  const getSortIcon = (columnKey: SortableKeys) => {
     if (!sortConfig || sortConfig.key !== columnKey) {
       return <ArrowUpDown className="w-4 h-4" />;
     }
@@ -241,6 +274,7 @@ s
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title="Filter leads by status"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>

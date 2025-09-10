@@ -3,6 +3,9 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { auth } from "@/app/api/auth-utils";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering for all dashboard pages
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardLayout({
   children,
 }: {
