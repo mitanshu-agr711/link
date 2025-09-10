@@ -23,12 +23,29 @@ export function SignUpForm() {
     setIsLoading(true);
     
     try {
-      // Sign up logic will be implemented here
-      console.log("Sign up:", { name, email, password });
-      // For demo purposes, redirect to dashboard
-      router.push("/dashboard");
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name: name || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Account created successfully! Please sign in.");
+        router.push("/auth/signin");
+      } else {
+        alert(data.error || "Registration failed");
+      }
     } catch (error) {
-      console.error("Sign up error:", error);
+      console.error("Registration error:", error);
+      alert("An error occurred during registration");
     } finally {
       setIsLoading(false);
     }
@@ -39,14 +56,13 @@ export function SignUpForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Full Name
+            Full Name 
           </label>
           <input
             id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter your full name"
           />

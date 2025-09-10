@@ -16,12 +16,28 @@ export function SignInForm() {
     setIsLoading(true);
     
     try {
-      // Sign in logic will be implemented here
-      console.log("Sign in:", { email, password });
-      // For demo purposes, redirect to dashboard
-      router.push("/dashboard");
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Login successful!");
+        router.push("/dashboard");
+      } else {
+        alert(data.error || "Login failed");
+      }
     } catch (error) {
-      console.error("Sign in error:", error);
+      console.error("Login error:", error);
+      alert("An error occurred during login");
     } finally {
       setIsLoading(false);
     }
