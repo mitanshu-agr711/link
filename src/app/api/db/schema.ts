@@ -4,7 +4,6 @@ import { createId } from "@paralleldrive/cuid2";
 
 import { 
   pgTable, 
-  serial, 
   varchar, 
   text, 
   integer, 
@@ -16,7 +15,7 @@ import {
 
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   name: text("name").notNull(),
   email: text("email").notNull(),
   password: text("password").notNull(),
@@ -24,20 +23,22 @@ export const users = pgTable("users", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
-
 export const sessions = pgTable("sessions", {
-  id: text("id")  
-    .primaryKey()
-    .$defaultFn(() => createId()),
-  userId: text("user_id")
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  sessionToken: text("session_token").notNull().unique(),
+  sessionToken: varchar("session_token", { length: 255 }).notNull().unique(),
   expires: timestamp("expires").notNull(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
 });
 
+
+
+
 export const accounts = pgTable("accounts", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

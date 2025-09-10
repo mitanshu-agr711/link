@@ -2,6 +2,7 @@ import { db, testDatabaseConnection } from "./connect/db.connect";
 import { users } from "./db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from 'bcryptjs';
+import { createSession } from './session';
 
 export async function GET() {
   const test = await testDatabaseConnection();
@@ -25,13 +26,32 @@ export async function POST(req: Request) {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await db.insert(users).values({
+    const newUser = await db.insert(users).values({
       email: email.toLowerCase(),
       name,
       password: hashedPassword,
+    }).returning({
+      id: users.id,
+      email: users.email,
+      name: users.name,
     });
 
-    return Response.json({ success: true });
+    if (newUser.length === 0) {
+      return Response.json({ error: "Failed to create user" }, { status: 500 });
+    }
+
+    // Create session for the new user
+    const sessionResult = await createSession(newUser[0].id);
+
+    if (!sessionResult.success) {
+      return Response.json({ error: "Failed to create session" }, { status: 500 });
+    }
+
+    return Response.json({ 
+      success: true, 
+      user: newUser[0],
+      message: "User registered successfully"
+    });
   } catch (error) {
     console.error("Error in register:", error);
     return Response.json({ error: "Database error" }, { status: 500 });
@@ -116,6 +136,16 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
+    // Create session for the new user
+    const sessionResult = await createSession(newUser[0].id);
+
+    if (!sessionResult.success) {
+      return {
+        success: false,
+        error: "User created but failed to create session"
+      };
+    }
+
     return {
       success: true,
       user: newUser[0],
@@ -165,6 +195,16 @@ export async function login(req: { body: { email: string; password: string } }) 
       return {
         success: false,
         error: "Invalid email or password"
+      };
+    }
+
+    // Create session for the user
+    const sessionResult = await createSession(user.id);
+
+    if (!sessionResult.success) {
+      return {
+        success: false,
+        error: "Login successful but failed to create session"
       };
     }
 

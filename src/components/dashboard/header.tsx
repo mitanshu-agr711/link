@@ -2,9 +2,10 @@
 
 import { Bell, Search, Sun, Moon, LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 interface User {
-  id: string;
+  id: string | number;
   name?: string | null;
   email: string;
   image?: string | null;
@@ -94,9 +95,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                 </span>
               </div>
             )}
-            <button className="p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-              <LogOut className="w-4 h-4" />
-            </button>
+            <LogoutButton />
           </div>
         </div>
       </div>
