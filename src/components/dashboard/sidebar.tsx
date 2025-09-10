@@ -98,7 +98,7 @@ export function DashboardSidebar() {
       </nav>
 
      
-      {!collapsed && (
+      {/* {!collapsed && (
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
@@ -110,7 +110,7 @@ export function DashboardSidebar() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
