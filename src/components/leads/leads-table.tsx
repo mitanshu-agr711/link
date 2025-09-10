@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Search, Filter, Plus, Mail, Phone, Calendar, MoreHorizontal, X, User, Building, MessageSquare, Clock, Edit, Pause, Play, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
-// Generate a larger dataset for infinite scrolling
+
 const generateMockLeads = (count: number) => {
   const companies = ["TechCorp Inc.", "Innovate Co.", "Startup.io", "BigCorp", "NextGen Solutions", "Digital Dynamics", "Cloud Systems", "Data Insights", "AI Ventures", "Growth Labs"];
   const campaigns = ["Q4 Outreach", "Holiday Campaign", "New Year Push", "Spring Launch", "Summer Drive", "Enterprise Focus", "SMB Outreach", "Product Demo", "LinkedIn Campaign", "Email Series"];
@@ -52,7 +52,6 @@ const generateMockLeads = (count: number) => {
   }));
 };
 
-// Initial dataset
 const allLeads = generateMockLeads(1000);
 
 const getStatusVariant = (status: string) => {
@@ -78,7 +77,6 @@ export function LeadsTable() {
   const observerRef = useRef<HTMLDivElement>(null);
   const ITEMS_PER_PAGE = 50;
 
-  // Filter leads based on search and status
   const filteredLeads = allLeads.filter(lead => {
     const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -90,7 +88,7 @@ export function LeadsTable() {
     return matchesSearch && matchesStatus;
   });
 
-  // Sort leads based on sort configuration
+ 
   const sortedLeads = [...filteredLeads].sort((a, b) => {
     if (!sortConfig) return 0;
     
@@ -103,13 +101,12 @@ export function LeadsTable() {
     return 0;
   });
 
-  // Load more leads
+
   const loadMoreLeads = useCallback(() => {
     if (loading || !hasMore) return;
     
     setLoading(true);
     
-    // Simulate API delay
     setTimeout(() => {
       const startIndex = displayedLeads.length;
       const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, sortedLeads.length);
@@ -121,20 +118,18 @@ export function LeadsTable() {
     }, 500);
   }, [loading, hasMore, displayedLeads.length, sortedLeads]);
 
-  // Reset displayed leads when search or status filter changes
+s
   useEffect(() => {
     setDisplayedLeads([]);
     setHasMore(true);
   }, [searchTerm, statusFilter, sortConfig]);
 
-  // Load initial data when displayedLeads is reset
   useEffect(() => {
     if (displayedLeads.length === 0 && hasMore) {
       loadMoreLeads();
     }
   }, [displayedLeads.length, hasMore, loadMoreLeads]);
 
-  // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -152,19 +147,18 @@ export function LeadsTable() {
     return () => observer.disconnect();
   }, [hasMore, loading, loadMoreLeads]);
 
-  // Handle lead selection
+
   const handleLeadClick = (lead: any) => {
     setSelectedLead(lead);
     setIsSheetOpen(true);
   };
 
-  // Close sheet
+
   const closeSheet = () => {
     setIsSheetOpen(false);
     setSelectedLead(null);
   };
 
-  // Handle ESC key
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -176,7 +170,7 @@ export function LeadsTable() {
     return () => document.removeEventListener('keydown', handleEscKey);
   }, []);
 
-  // Handle sorting
+  
   const handleSort = (key: string) => {
     setSortConfig(prevConfig => {
       if (prevConfig?.key === key) {
@@ -186,7 +180,7 @@ export function LeadsTable() {
     });
   };
 
-  // Get sort icon
+  
   const getSortIcon = (columnKey: string) => {
     if (!sortConfig || sortConfig.key !== columnKey) {
       return <ArrowUpDown className="w-4 h-4" />;
@@ -196,29 +190,28 @@ export function LeadsTable() {
       : <ArrowDown className="w-4 h-4" />;
   };
 
-  // Action handlers
   const handleEdit = (lead: any, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Edit lead:', lead.id);
-    // Add edit functionality
+    
   };
 
   const handlePauseResume = (lead: any, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Pause/Resume lead:', lead.id);
-    // Add pause/resume functionality
+  
   };
 
   const handleDelete = (lead: any, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Delete lead:', lead.id);
-    // Add delete functionality
+   
   };
 
   const handleToggleStatus = (lead: any, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log('Toggle status for lead:', lead.id);
-    // Add toggle status functionality
+    
   };
 
   return (
@@ -243,7 +236,7 @@ export function LeadsTable() {
                 />
               </div>
               
-              {/* Status Filter */}
+            
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -359,7 +352,7 @@ export function LeadsTable() {
                   </TableRow>
                 ))}
                 
-                {/* Loading skeleton rows */}
+              
                 {loading && Array.from({ length: 10 }).map((_, index) => (
                   <TableRow key={`skeleton-${index}`}>
                     <TableCell>
@@ -396,7 +389,7 @@ export function LeadsTable() {
             </Table>
           </div>
 
-          {/* Intersection observer target */}
+        
           <div ref={observerRef} className="h-4" />
 
           {displayedLeads.length === 0 && !loading && (
@@ -413,7 +406,7 @@ export function LeadsTable() {
         </CardContent>
       </Card>
 
-      {/* Lead Detail Side Sheet */}
+    
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="w-[600px] sm:w-[700px] overflow-hidden flex flex-col">
           {selectedLead && (
@@ -426,14 +419,12 @@ export function LeadsTable() {
                       {selectedLead.position} at {selectedLead.company}
                     </SheetDescription>
                   </div>
-                  {/* <Button variant="ghost" size="sm" onClick={closeSheet}>
-                    <X className="h-4 w-4" />
-                  </Button> */}
+                 
                 </div>
               </SheetHeader>
 
               <div className="flex-1 overflow-y-auto mt-6 space-y-6 pr-2">
-                {/* Contact Information */}
+              
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center">
                     <User className="w-5 h-5 mr-2" />
@@ -455,7 +446,6 @@ export function LeadsTable() {
                   </div>
                 </div>
 
-                {/* Campaign Information */}
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center">
                     <MessageSquare className="w-5 h-5 mr-2" />
@@ -475,7 +465,7 @@ export function LeadsTable() {
                   </div>
                 </div>
 
-                {/* Interaction History */}
+              
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center">
                     <Clock className="w-5 h-5 mr-2" />
@@ -494,7 +484,7 @@ export function LeadsTable() {
                   </div>
                 </div>
 
-                {/* Notes */}
+             
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Notes</h3>
                   <div className="p-4 border rounded-lg">
@@ -502,7 +492,7 @@ export function LeadsTable() {
                   </div>
                 </div>
 
-                {/* Additional Information */}
+              
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold">Additional Information</h3>
                   <div className="space-y-4">
@@ -596,7 +586,6 @@ export function LeadsTable() {
                   </div>
                 </div>
 
-                {/* Action Buttons - Fixed at bottom of scrollable area */}
                 <div className="flex space-x-3 pt-4 border-t sticky bottom-0 bg-background">
                   <Button className="flex-1">
                     <Mail className="w-4 h-4 mr-2" />

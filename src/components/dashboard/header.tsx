@@ -38,7 +38,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
-        {/* Breadcrumbs */}
+       
         <div className="flex items-center space-x-2 text-sm">
           {breadcrumbs.map((item, index) => (
             <div key={item.href} className="flex items-center">
@@ -56,9 +56,8 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           ))}
         </div>
 
-        {/* Right side actions */}
         <div className="flex items-center space-x-4">
-          {/* Search */}
+         
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -68,7 +67,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
             />
           </div>
 
-          {/* Notifications */}
           <button className="relative p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg">
             <Bell className="w-5 h-5" />
             <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white" />
@@ -76,7 +74,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 
         
 
-          {/* User menu */}
+    
           <div className="flex items-center space-x-3">
             <div className="text-right">
               <p className="text-sm font-medium text-gray-900">{user.name}</p>

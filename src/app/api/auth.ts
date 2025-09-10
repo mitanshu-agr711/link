@@ -22,7 +22,6 @@ export async function POST(req: Request) {
       return Response.json({ error: "User already exists" }, { status: 400 });
     }
 
-    // Hash the password
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -40,7 +39,7 @@ export async function POST(req: Request) {
       return Response.json({ error: "Failed to create user" }, { status: 500 });
     }
 
-    // Create session for the new user
+   
     const sessionResult = await createSession(newUser[0].id);
 
     if (!sessionResult.success) {
@@ -72,7 +71,6 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return {
@@ -81,7 +79,6 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
-    // Validate password strength
     if (password.length < 6) {
       return {
         success: false,
@@ -89,7 +86,6 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
-    // Check if user already exists
     console.log('Checking if user exists with email:', email);
     const existingUser = await db
       .select()
@@ -106,13 +102,12 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
-    // Hash the password
+
     console.log('Hashing password...');
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     console.log('Password hashed successfully');
 
-    // Create new user
     console.log('Creating new user in database...');
     const newUser = await db
       .insert(users)
@@ -136,7 +131,7 @@ export async function register(req: { body: { email: string; password: string; n
       };
     }
 
-    // Create session for the new user
+
     const sessionResult = await createSession(newUser[0].id);
 
     if (!sessionResult.success) {
@@ -172,7 +167,7 @@ export async function login(req: { body: { email: string; password: string } }) 
       };
     }
 
-    // Find user by email
+   
     const userResult = await db
       .select()
       .from(users)
@@ -188,7 +183,7 @@ export async function login(req: { body: { email: string; password: string } }) 
 
     const user = userResult[0];
 
-    // Verify password
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -198,7 +193,7 @@ export async function login(req: { body: { email: string; password: string } }) 
       };
     }
 
-    // Create session for the user
+
     const sessionResult = await createSession(user.id);
 
     if (!sessionResult.success) {

@@ -34,7 +34,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
 
   const renderOverview = () => (
     <div className="space-y-6">
-      {/* Campaign Stats */}
+      
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
@@ -64,9 +64,9 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </Card>
       </div>
 
-      {/* Two Horizontal Cards */}
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Campaign Progress Card */}
+      
         <Card>
           <CardHeader>
             <CardTitle>Campaign Progress</CardTitle>
@@ -126,7 +126,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
           </CardContent>
         </Card>
 
-        {/* Campaign Details Card */}
+        
         <Card>
           <CardHeader>
             <CardTitle>Campaign Details</CardTitle>
@@ -175,7 +175,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </Card>
       </div>
 
-      {/* Recent Activity */}
+      
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
@@ -210,7 +210,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
   );
 
   const renderLeads = () => {
-    // Mock leads data for the campaign
+
     const leads = [
       {
         id: 1,
@@ -282,7 +282,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Leads Stats */}
+            
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">{leads.length}</div>
@@ -308,7 +308,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
               </div>
             </div>
 
-            {/* Leads Table */}
+            
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-gray-50 px-6 py-3 border-b">
                 <h3 className="font-medium">Leads List</h3>
@@ -419,10 +419,10 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb Header */}
+     
       <div className="flex items-center justify-between">
         <div>
-          {/* Breadcrumb Navigation */}
+          
           <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
             <button 
               onClick={() => router.push('/dashboard')}
@@ -453,7 +453,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </div>
       </div>
 
-      {/* Tab Navigation */}
+     
       <div className="border-b">
         <nav className="flex space-x-8">
           {tabs.map((tab) => {
@@ -476,7 +476,7 @@ export function CampaignDetails({ campaign }: CampaignDetailsProps) {
         </nav>
       </div>
 
-      {/* Content */}
+     
       {renderContent()}
     </div>
   );

@@ -138,9 +138,9 @@ export function DashboardOverview() {
 
   const getFilteredActivities = () => {
     if (activityFilter === "recent") {
-      return recentActivities.slice(0, 7); // Show only first 3 for recent
+      return recentActivities.slice(0, 7); 
     }
-    return recentActivities; // Show all for other functions
+    return recentActivities; 
   };
 
   const getStatusVariant = (status: string) => {
@@ -184,9 +184,9 @@ export function DashboardOverview() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column - Campaigns and LinkedIn Account */}
+       
         <div className="space-y-6">
-          {/* Campaigns Card */}
+          
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -235,7 +235,7 @@ export function DashboardOverview() {
             </CardContent>
           </Card>
 
-          {/* LinkedIn Account Card */}
+        
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -285,7 +285,7 @@ export function DashboardOverview() {
           </Card>
         </div>
 
-        {/* Right Column - Recent Activity */}
+       
         <div>
           <Card>
             <CardHeader>

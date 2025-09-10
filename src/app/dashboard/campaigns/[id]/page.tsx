@@ -1,7 +1,6 @@
 import { CampaignDetails } from "@/components/campaigns/campaign-details";
 
-// This would typically get the campaign data from an API or database
-// For now, we'll use mock data that matches the campaign ID
+
 const getCampaignById = (id: string) => {
   const mockCampaigns = [
     {

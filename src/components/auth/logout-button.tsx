@@ -16,9 +16,9 @@ export function LogoutButton() {
       });
 
       if (response.ok) {
-        // Redirect to sign-in page after successful logout
+       
         router.push("/auth/signin");
-        router.refresh(); // Refresh to update server components
+        router.refresh(); 
       } else {
         console.error("Logout failed");
       }

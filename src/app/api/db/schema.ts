@@ -47,7 +47,7 @@ export const accounts = pgTable("accounts", {
   providerAccountId: varchar("provider_account_id", { length: 255 }).notNull(),
   refreshToken: text("refresh_token"),
   accessToken: text("access_token"),
-  expiresAt: integer("expires_at"),   // ✅ works now
+  expiresAt: integer("expires_at"),   
   tokenType: varchar("token_type", { length: 255 }),
   scope: varchar("scope", { length: 255 }),
   idToken: text("id_token"),
@@ -60,14 +60,14 @@ export const verificationTokens = pgTable("verification_tokens", {
   expires: timestamp("expires").notNull(),
 });
 
-// Application tables
+
 export const campaigns = pgTable("campaigns", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => createId()),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  status: varchar("status", { length: 50 }).notNull().default("draft"), // draft, active, paused, completed
+  status: varchar("status", { length: 50 }).notNull().default("draft"), 
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -86,7 +86,7 @@ export const leads = pgTable("leads", {
   email: varchar("email", { length: 255 }).notNull(),
   company: varchar("company", { length: 255 }),
   position: varchar("position", { length: 255 }),
-  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, contacted, responded, converted
+  status: varchar("status", { length: 50 }).notNull().default("pending"), 
   campaignId: text("campaign_id")
     .references(() => campaigns.id, { onDelete: "cascade" }),
   userId: text("user_id")
@@ -105,7 +105,7 @@ export const interactions = pgTable("interactions", {
   leadId: text("lead_id")
     .notNull()
     .references(() => leads.id, { onDelete: "cascade" }),
-  type: varchar("type", { length: 50 }).notNull(), // email, call, meeting, note
+  type: varchar("type", { length: 50 }).notNull(), 
   subject: varchar("subject", { length: 255 }),
   content: text("content"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
@@ -124,8 +124,8 @@ export const messages = pgTable("messages", {
     .references(() => leads.id, { onDelete: "cascade" }),
   subject: varchar("subject", { length: 255 }),
   content: text("content").notNull(),
-  type: varchar("type", { length: 50 }).notNull(), // outbound, inbound
-  status: varchar("status", { length: 50 }).notNull().default("sent"), // sent, delivered, opened, replied
+  type: varchar("type", { length: 50 }).notNull(), 
+  status: varchar("status", { length: 50 }).notNull().default("sent"), 
   sentAt: timestamp("sent_at").defaultNow().notNull(),
   userId: text("user_id")
     .notNull()

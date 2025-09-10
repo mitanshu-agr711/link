@@ -183,7 +183,7 @@ export function CampaignsTable() {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
-  // Action handlers
+ 
   const handleEdit = (campaign: any, e: React.MouseEvent) => {
     e.stopPropagation();
     // For now, we'll simulate editing by updating the campaign name
@@ -283,7 +283,7 @@ export function CampaignsTable() {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset to first page when searching
+                  setCurrentPage(1); 
                 }}
                 className="pl-10 w-80"
               />
@@ -462,7 +462,7 @@ export function CampaignsTable() {
           </Table>
         </div>
 
-        {/* Pagination */}
+       
         <div className="flex items-center justify-between mt-6">
           <div className="text-sm text-muted-foreground">
             Showing {startIndex + 1} to {Math.min(endIndex, filteredCampaigns.length)} of {filteredCampaigns.length} campaigns

@@ -39,7 +39,7 @@ export function DashboardSidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Header */}
+   
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         {!collapsed && (
           <div className="flex items-center space-x-2">
@@ -61,7 +61,7 @@ export function DashboardSidebar() {
         </button>
       </div>
 
-      {/* Navigation */}
+     
       <nav className="flex-1 px-4 py-6 space-y-2">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
@@ -97,7 +97,7 @@ export function DashboardSidebar() {
         })}
       </nav>
 
-      {/* Profile Section */}
+     
       {!collapsed && (
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
